@@ -26,7 +26,7 @@ _pdf: [Full Assignment](docs/arbetsprov_nn_2020v2.pdf)_
 
 ## Overview
 
-Reference [](https://github.com/jasontaylordev/CleanArchitecture#overview)
+Reference: [jasontaylordev/CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture#overview)
 
 - ### Application
 
@@ -62,8 +62,6 @@ Reference [](https://github.com/jasontaylordev/CleanArchitecture#overview)
 
 #### Text
 
-- [Repository Pattern Implementation](https://medium.com/net-core/repository-pattern-implementation-in-asp-net-core-21e01c6664d7)
-- [Generic Async Repositories in C#](https://blog.zhaytam.com/2019/03/14/generic-repository-pattern-csharp/)
 - [Seeding Entity Framework Database from CSV](https://www.davepaquette.com/archive/2014/03/18/seeding-entity-framework-database-from-csv.aspx)
 
 ## Developer
