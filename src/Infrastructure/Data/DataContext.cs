@@ -11,7 +11,6 @@ namespace Arbetsprov.Infrastructure.Data
     public sealed class DataContext : DbContext, IDataContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-
         public DbSet<PriceDetail> PriceDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

@@ -27,12 +27,14 @@ namespace Arbetsprov.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInfrastructure(Configuration);
+            services.AddInfrastructure(DbConnectionString, UseInMemoryDb);
             services.AddControllersWithViews();
             services.AddSpa();
         }
 
         public IConfiguration Configuration { get; }
         public string DbConnectionString => Configuration.GetConnectionString("DefaultConnection");
+        public bool UseInMemoryDb => Configuration.GetValue<bool>("UseInMemoryDatabase");
+
     }
 }

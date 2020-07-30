@@ -23,34 +23,33 @@ namespace Arbetsprov.Infrastructure.Data
             Delimiter = "\t"
         };
 
-        public static async Task SeedCSV(DataContext ctx)
+        public static async Task SeedAsync(DataContext ctx)
         {
             // TODO: a better way to seed only if we haven't seeded before?
-            if (!ctx.PriceDetails.Any())
+            if (ctx.PriceDetails.Any()) return;  
+            try
             {
-                try
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(InitialData.ResourceName))
+                using (var reader = new CsvReader(new StreamReader(stream, Encoding.UTF8), CultureInfo.InvariantCulture))
                 {
-                    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(InitialData.ResourceName))
-                    using (var reader = new CsvReader(new StreamReader(stream, Encoding.UTF8), CultureInfo.InvariantCulture))
-                    {
-                        // reader.Configuration.RegisterClassMap<PriceDetailCSVMapper>();
-                        reader.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.AddRange(new[] { "NULL", "0" });
-                        reader.Configuration.Delimiter = InitialData.Delimiter;
+                    // reader.Configuration.RegisterClassMap<PriceDetailCSVMapper>();
+                    reader.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.AddRange(new[] { "NULL", "0" });
+                    reader.Configuration.Delimiter = InitialData.Delimiter;
 
-                        foreach (var item in reader.GetRecords<PriceDetail>().ToList().AsReadOnly())
-                            ctx.AddOrUpdate(item);
+                    foreach (var item in reader.GetRecords<PriceDetail>())
+                        ctx.AddOrUpdate(item);
 
-                        // We have to set IDENTITY_INSERT on PriceDetail to insert values with specified Primary key
-                        await ctx.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT PriceDetail ON");
-                        await ctx.SaveChangesAsync();
-                        await ctx.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT PriceDetail OFF");
-                    }
+                    await ctx.Database.OpenConnectionAsync();
+                    await ctx.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT PriceDetail ON");
+                    await ctx.SaveChangesAsync();
+                    await ctx.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT PriceDetail OFF");
+                    ctx.Database.CloseConnection();
                 }
-                catch (Exception e)
-                {
-                    // TODO: Add better logging system
-                    Debug.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                // TODO: Add better logging system
+                Debug.WriteLine(e);
             }
         }
     }

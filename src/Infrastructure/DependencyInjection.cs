@@ -9,23 +9,22 @@ namespace Arbetsprov.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static void AddInfrastructure(this IServiceCollection services, string connectionString, bool useInMemoryDb = false)
         {
-            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+            if (useInMemoryDb)
             {
                 // In memory database context
                 services.AddDbContext<DataContext>(options =>
                 {
-                    options.UseInMemoryDatabase("ArbetsprovInMemoryDb");
+                    options.UseInMemoryDatabase("InMemoryDb");
                     options.ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
                 });
             }
             else
             {
                 // Database context
-                services.AddDbContext<DataContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                        b => b.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
+                // services.AddDbContext<DataContext>();
+                services.AddDbContext<DataContext>(opts => opts.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
             }
 
             services.AddScoped<IDataContext>(provider => provider.GetService<DataContext>());
