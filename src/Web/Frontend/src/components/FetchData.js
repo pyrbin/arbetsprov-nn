@@ -4,11 +4,12 @@ export class FetchData extends Component {
   static displayName = FetchData.name;
 
   constructor(props) {
+    super(props);
     this.state = { pricePeriods: [], loading: true };
   }
 
   componentDidMount() {
-    this.populateWeatherData();
+    this.populatePricePeriodsData();
   }
 
   static renderProductPriceTables(productPrices) {
@@ -54,7 +55,7 @@ export class FetchData extends Component {
     );
   }
 
-  async populateWeatherData() {
+  async populatePricePeriodsData() {
     const id = this.props.match.params.id;
     const response = await fetch("api/PriceDetail/" + id);
     const data = await response.json();
