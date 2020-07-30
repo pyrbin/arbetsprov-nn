@@ -1,3 +1,4 @@
+using Arbetsprov.Application;
 using Arbetsprov.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace Arbetsprov.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplication();
             services.AddInfrastructure(DbConnectionString, UseInMemoryDb);
             services.AddControllersWithViews();
             services.AddSpa();
