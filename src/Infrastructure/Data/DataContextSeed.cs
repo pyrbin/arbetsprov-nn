@@ -53,6 +53,7 @@ namespace Arbetsprov.Infrastructure.Data
             }
         }
     }
+
     /// <summary>
     /// Provides meta info about a CSV file
     /// </summary>

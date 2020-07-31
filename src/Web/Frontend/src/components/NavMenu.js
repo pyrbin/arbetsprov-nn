@@ -16,7 +16,7 @@ export class NavMenu extends Component {
         >
           <Container>
             <NavbarBrand tag={Link} to="/">
-              Arbetsprov
+              arbetsprov
             </NavbarBrand>
           </Container>
         </Navbar>

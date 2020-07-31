@@ -21,9 +21,9 @@ namespace Arbetsprov.Web.Controllers
 
         // GET: api/PriceDetail/:id
         [HttpGet("{sku}")]
-        public async Task<ActionResult<IEnumerable<OptimizedPricePeriod>>> GetOptimizedValues(string sku)
+        public async Task<ActionResult<IEnumerable<OptimizedPricePeriod>>> GetOptimizedValues(string sku, string market, string currency)
         {
-            return Ok(await Service.GetOptimizedPeriodFor(sku, "SEK", "sv"));
+            return Ok(await Service.GetOptimizedPeriodFor(sku, currency, market));
         }
     }
 }
