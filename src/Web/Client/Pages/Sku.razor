@@ -1,0 +1,67 @@
+﻿@page "/sku/{id}"
+@using Microsoft.AspNetCore.WebUtilities
+@using Arbetsprov.Application.DTO
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<h1>@Id</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (pricePeriods == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Marknad</th>
+                <th>Pris</th>
+                <th>Valuta</th>
+                <th>Start och slut</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var period in pricePeriods)
+            {
+                <tr>
+                    <td>@period.Market</td>
+                    <td>@period.Price</td>
+                    <td>@period.Currency</td>
+                    <td>@period.Start - @period.End</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    public string Market = "sv";
+
+    public string Currency = "SEK";
+
+    private OptimizedPricePeriod[] pricePeriods;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new Uri(NavigationManager.Uri).Query;
+        Microsoft.Extensions.Primitives.StringValues value;
+
+        if (QueryHelpers.ParseQuery(query).TryGetValue("market", out value))
+        {
+            Market = value;
+        }
+
+        if (QueryHelpers.ParseQuery(query).TryGetValue("currency", out value))
+        {
+            Currency = value;
+        }
+
+        pricePeriods = await Http.GetFromJsonAsync<OptimizedPricePeriod[]>($"api/PriceDetail/{Id}?market={Market}&currency={Currency}");
+    }
+}
