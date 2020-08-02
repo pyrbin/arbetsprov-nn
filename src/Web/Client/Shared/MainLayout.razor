@@ -1,11 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="main">
-    <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
-    </div>
+<header class="header flex-column flex-wrap border-bottom shadow-sm border-light" style="overflow-y: auto">
+    <Navbar />
+</header>
 
-    <div class="content px-4">
+<main class="main container" style="padding-top: 30px">
+    <div class="content px-4 py-2">
         @Body
     </div>
-</div>
+</main>

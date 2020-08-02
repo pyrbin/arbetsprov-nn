@@ -1,0 +1,21 @@
+﻿@inject NavigationManager NavigationManager
+
+<BSNavbar IsExpand="true" IsDark="false">
+    <BSNavbarBrand Href="/">Arbetsprov</BSNavbarBrand>
+    <BSBasicForm IsInline="true" Class="mx-auto w-100 searchbar" >
+        <BSBasicInput InputType="InputType.Text" Value="String.Empty" Class="w-100" Name="@SearchQueryKey" Id="@SearchQueryKey" PlaceHolder="Search for sku ..." />
+    </BSBasicForm>
+</BSNavbar>
+
+@code
+{
+    private readonly string SearchQueryKey = "search";
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new Uri(NavigationManager.Uri).Query;
+        if (QueryHelpers.ParseQuery(query).TryGetValue("search", out var val))
+        {
+            NavigationManager.NavigateTo($"{NavigationManager.BaseUri}sku/{val}");
+        }
+    }
+}

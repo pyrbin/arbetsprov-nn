@@ -1,20 +1,38 @@
 ﻿@page "/sku/{id}"
 @using Microsoft.AspNetCore.WebUtilities
 @using Arbetsprov.Application.DTO
+@using System.Linq
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 
 <h1>@Id</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
+<BSBasicForm>
+    <BSFormGroup>
+        <label>Market</label>
+        <select class="px-2 py-1 rounded-lg ml-1 bg-dark text-white" value="@SelectedMarket" @onchange="OnChangeMarketSelect">
+            @foreach (var market in Markets)
+            {
+                <option value="@market">@market</option>
+            }
+        </select>
+        <label class="ml-3">Currency</label>
+        <select class="px-2 py-1 rounded-lg ml-1 bg-dark text-white" value="@SelectedCurrency" @onchange="OnChangeCurrencySelect">
+            @foreach (var currency in Currencies)
+            {
+                <option value="@currency">@currency</option>
+            }
+        </select>
+    </BSFormGroup>
+</BSBasicForm>
 
-@if (pricePeriods == null)
+@if (PricePeriods == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
+    <BSTable Class="rounded" IsDark="true" IsBordered="true" IsStriped="true">
         <thead>
             <tr>
                 <th>Marknad</th>
@@ -24,7 +42,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var period in pricePeriods)
+            @foreach (var period in PricePeriods)
             {
                 <tr>
                     <td>@period.Market</td>
@@ -34,34 +52,69 @@ else
                 </tr>
             }
         </tbody>
-    </table>
+    </BSTable>
 }
 
 @code {
+
     [Parameter]
     public string Id { get; set; }
 
-    public string Market = "sv";
+    private readonly string MarketQuery = "market";
+    private readonly string CurrencyQuery = "currency";
 
-    public string Currency = "SEK";
+    private OptimizedPricePeriod[] PricePeriods;
 
-    private OptimizedPricePeriod[] pricePeriods;
+    private List<string> Markets = new List<string>();
+    private List<string> Currencies = new List<string>();
+
+    private string SelectedMarket { get; set; } = "";
+    private string SelectedCurrency { get; set; } = "";
+
+    protected async void OnChangeMarketSelect(ChangeEventArgs e)
+    {
+        SelectedMarket = (string)e.Value;
+        await OnChangeSelect();
+    }
+
+    protected async void OnChangeCurrencySelect(ChangeEventArgs e)
+    {
+        SelectedCurrency = (string)e.Value;
+        await OnChangeSelect();
+    }
+
+    protected async Task OnChangeSelect()
+    {
+        var query = new Dictionary<string, string> { { MarketQuery, SelectedMarket }, { CurrencyQuery, SelectedCurrency } };
+        NavigationManager.NavigateTo(QueryHelpers.AddQueryString(NavigationManager.BaseUri + "sku/" + Id, query));
+
+        await FetchPricePeriods();
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        var exists = (await Http.GetAsync($"api/PriceDetail/{Id}/exists"));
+
+        if (exists.StatusCode == System.Net.HttpStatusCode.NotFound)
+            NavigationManager.NavigateTo(NavigationManager.BaseUri);
+
+        Markets = (await Http.GetFromJsonAsync<string[]>($"api/PriceDetail/{Id}/markets")).ToList();
+        Currencies = (await Http.GetFromJsonAsync<string[]>($"api/PriceDetail/{Id}/currencies")).ToList();
+
         var query = new Uri(NavigationManager.Uri).Query;
-        Microsoft.Extensions.Primitives.StringValues value;
 
-        if (QueryHelpers.ParseQuery(query).TryGetValue("market", out value))
-        {
-            Market = value;
-        }
+        if (QueryHelpers.ParseQuery(query).TryGetValue(MarketQuery, out var value))
+            SelectedMarket = value;
+        if (QueryHelpers.ParseQuery(query).TryGetValue(CurrencyQuery, out value))
+            SelectedCurrency = value;
 
-        if (QueryHelpers.ParseQuery(query).TryGetValue("currency", out value))
-        {
-            Currency = value;
-        }
-
-        pricePeriods = await Http.GetFromJsonAsync<OptimizedPricePeriod[]>($"api/PriceDetail/{Id}?market={Market}&currency={Currency}");
+        await FetchPricePeriods();
     }
+
+    protected async Task FetchPricePeriods()
+    {
+        PricePeriods = await Http.GetFromJsonAsync<OptimizedPricePeriod[]>($"api/PriceDetail/{Id}/optimizedvalues?market={SelectedMarket}&currency={SelectedCurrency}");
+    }
+
 }
