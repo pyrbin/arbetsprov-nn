@@ -2,7 +2,7 @@
 
 A simple ASP .NET Core 3.1 WebApp built using the "Clean Architecture" principles.
 
-Uses React for the frontend & EntityFrameworkCore for the backend.
+Uses Blazor WebAssembly for the frontend & EntityFrameworkCore for the backend.
 
 ## Assignment
 
