@@ -27,11 +27,36 @@ namespace Arbetsprov.Application.Services
                 .Where(pd => pd.CatalogEntryCode == sku && pd.CurrencyCode == currency && pd.MarketId == market)
                 .ToListAsync();
 
-            return PriceGetter.Calculate(new OptimizedPriceOptions() {
-                Currency = currency, 
+            return PriceGetter.Calculate(new OptimizedPriceOptions()
+            {
+                Currency = currency,
                 Market = market,
                 Prices = priceDetails
             });
         }
+
+        public async Task<IEnumerable<string>> GetCurrenciesFor(string sku)
+        {
+            return await Context.PriceDetails
+                .Where(pd => pd.CatalogEntryCode == sku)
+                .Select(pd => pd.CurrencyCode)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetMarketsFor(string sku)
+        {
+            return await Context.PriceDetails
+                .Where(pd => pd.CatalogEntryCode == sku)
+                .Select(pd => pd.MarketId)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<bool> Exists(string sku)
+        {
+            return await Context.PriceDetails.AnyAsync(e => e.CatalogEntryCode == sku);
+        }
     }
+
 }
