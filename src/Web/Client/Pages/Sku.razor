@@ -57,8 +57,8 @@ else
 
 @code {
 
-    [Parameter]
-    public string Id { get; set; }
+        [Parameter]
+        public string Id { get; set; }
 
     private readonly string MarketQuery = "market";
     private readonly string CurrencyQuery = "currency";
@@ -86,6 +86,8 @@ else
     protected async Task OnChangeSelect()
     {
         var query = new Dictionary<string, string> { { MarketQuery, SelectedMarket }, { CurrencyQuery, SelectedCurrency } };
+
+        // Modify URL on market or currency change
         NavigationManager.NavigateTo(QueryHelpers.AddQueryString(NavigationManager.BaseUri + "sku/" + Id, query));
 
         await FetchPricePeriods();
@@ -96,8 +98,12 @@ else
     {
         var exists = (await Http.GetAsync($"api/PriceDetail/{Id}/exists"));
 
+        // If requsted SKU doesn't exist, navigate to home page.
         if (exists.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
             NavigationManager.NavigateTo(NavigationManager.BaseUri);
+            return;
+        }
 
         Markets = (await Http.GetFromJsonAsync<string[]>($"api/PriceDetail/{Id}/markets")).ToList();
         Currencies = (await Http.GetFromJsonAsync<string[]>($"api/PriceDetail/{Id}/currencies")).ToList();

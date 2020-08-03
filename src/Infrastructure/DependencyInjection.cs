@@ -23,7 +23,6 @@ namespace Arbetsprov.Infrastructure
             else
             {
                 // Database context
-                // services.AddDbContext<DataContext>();
                 services.AddDbContext<DataContext>(opts => opts.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
             }
 

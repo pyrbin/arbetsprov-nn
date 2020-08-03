@@ -2,6 +2,9 @@ using System;
 
 namespace Arbetsprov.Application.DTO
 {
+    /// <summary>
+    /// Data object/class for optimized price periods
+    /// </summary>
     public class OptimizedPricePeriod
     {
         public string Market { get; set; }

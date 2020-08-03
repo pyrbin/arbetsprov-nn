@@ -12,6 +12,5 @@ namespace Arbetsprov.Application.Interfaces
         Task<IEnumerable<string>> GetCurrenciesFor(string sku);
         Task<IEnumerable<string>> GetMarketsFor(string sku);
         Task<bool> Exists(string sku);
-
     }
 }

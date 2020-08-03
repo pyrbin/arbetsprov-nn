@@ -23,6 +23,11 @@ namespace Arbetsprov.Infrastructure.Data
             Delimiter = "\t"
         };
 
+        /// <summary>
+        /// Seed the database with initial data from csv file.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public static async Task SeedAsync(DataContext ctx)
         {
             // TODO: a better way to seed only if we haven't seeded before?
@@ -32,13 +37,14 @@ namespace Arbetsprov.Infrastructure.Data
                 using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(InitialData.ResourceName))
                 using (var reader = new CsvReader(new StreamReader(stream, Encoding.UTF8), CultureInfo.InvariantCulture))
                 {
-                    // reader.Configuration.RegisterClassMap<PriceDetailCSVMapper>();
+                    // Add "NULL" as a null value for DateTime values.
                     reader.Configuration.TypeConverterOptionsCache.GetOptions<DateTime?>().NullValues.AddRange(new[] { "NULL", "0" });
                     reader.Configuration.Delimiter = InitialData.Delimiter;
 
                     foreach (var item in reader.GetRecords<PriceDetail>())
                         ctx.AddOrUpdate(item);
 
+                    // Enable IDENTITY_INSERT for price detail so we can specify a primary key.
                     await ctx.Database.OpenConnectionAsync();
                     await ctx.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT PriceDetail ON");
                     await ctx.SaveChangesAsync();

@@ -10,6 +10,9 @@ using System.Diagnostics;
 
 namespace Arbetsprov.Application.Services
 {
+    /// <summary>
+    /// PriceDetail service class
+    /// </summary>
     public class PriceDetailService : IPriceDetailService
     {
         private readonly IDataContext Context;
@@ -21,6 +24,13 @@ namespace Arbetsprov.Application.Services
             PriceGetter = new OptimizedPriceGetter();
         }
 
+        /// <summary>
+        /// Get optimized price periods for specified SKU.
+        /// </summary>
+        /// <param name="sku"></param>
+        /// <param name="currency"></param>
+        /// <param name="market"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<OptimizedPricePeriod>> GetOptimizedPeriodFor(string sku, string currency, string market)
         {
             var priceDetails = await Context.PriceDetails
@@ -35,6 +45,11 @@ namespace Arbetsprov.Application.Services
             });
         }
 
+        /// <summary>
+        /// Get all available currencies for specified SKU.
+        /// </summary>
+        /// <param name="sku"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> GetCurrenciesFor(string sku)
         {
             return await Context.PriceDetails
@@ -44,6 +59,11 @@ namespace Arbetsprov.Application.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Get all available markets for specified SKU
+        /// </summary>
+        /// <param name="sku"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> GetMarketsFor(string sku)
         {
             return await Context.PriceDetails
@@ -53,6 +73,11 @@ namespace Arbetsprov.Application.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// If specified SKU exists in the database
+        /// </summary>
+        /// <param name="sku"></param>
+        /// <returns></returns>
         public async Task<bool> Exists(string sku)
         {
             return await Context.PriceDetails.AnyAsync(e => e.CatalogEntryCode == sku);

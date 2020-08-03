@@ -19,6 +19,7 @@ namespace Arbetsprov.Web.API
             {
                 try
                 {
+                    // Seed & migrate database if needed
                     var ctx = scope.ServiceProvider.GetRequiredService<DataContext>();
                     await ctx.Database.MigrateAsync();
                     await DataContextSeed.SeedAsync(ctx);

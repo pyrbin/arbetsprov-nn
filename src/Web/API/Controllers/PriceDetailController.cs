@@ -6,6 +6,9 @@ using Arbetsprov.Application.DTO;
 
 namespace Arbetsprov.Web.API.Controllers
 {
+    /// <summary>
+    /// Controller for PriceDetail related functions
+    /// </summary>
     [ApiController, Route("api/[controller]")]
     public class PriceDetailController : ControllerBase
     {
