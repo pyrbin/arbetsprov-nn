@@ -2,20 +2,17 @@
 
 <BSNavbar IsExpand="true" IsDark="false">
     <BSNavbarBrand Href="/">Arbetsprov</BSNavbarBrand>
-    <BSBasicForm IsInline="true" Class="mx-auto w-100 searchbar" >
-        <BSBasicInput InputType="InputType.Text" Value="String.Empty" Class="w-100" Name="@SearchQueryKey" Id="@SearchQueryKey" PlaceHolder="Search for sku ..." />
-    </BSBasicForm>
+    <form class="mx-auto w-100 searchbar" @onsubmit:preventDefault @onsubmit="OnSearchForSku" >
+        <BSBasicInput InputType="InputType.Text" @bind-Value="Query" Class="w-100" id="searchbar" name="searchbar" PlaceHolder="Search for sku ..." />
+    </form>
 </BSNavbar>
 
 @code
 {
-    private readonly string SearchQueryKey = "search";
-    protected override async Task OnInitializedAsync()
+    private string Query { get; set; }
+
+    private void OnSearchForSku()
     {
-        var query = new Uri(NavigationManager.Uri).Query;
-        if (QueryHelpers.ParseQuery(query).TryGetValue("search", out var val))
-        {
-            NavigationManager.NavigateTo($"{NavigationManager.BaseUri}sku/{val}");
-        }
+        NavigationManager.NavigateTo($"{NavigationManager.BaseUri}sku/{Query}", true);
     }
 }
