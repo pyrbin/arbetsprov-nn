@@ -17,12 +17,13 @@ _pdf: [Full Assignment](docs/arbetsprov_nn_2020v2.pdf)_
 - .NET Core 3.1
 - ASP .NET Core 3.1
 - Entity Framework Core 3.1
-- ReactJS
+- Blazor WebAssembly
 - CSVHelper
 
 ## How To Run
 
-> TODO
+- Make sure Web.API is set as default startup project.
+- Run & Debug "Arbetsprov"
 
 ## Overview
 
@@ -41,7 +42,14 @@ Reference: [jasontaylordev/CleanArchitecture](https://github.com/jasontaylordev/
   This layer contains classes for accessing external resources such as file systems, web services, smtp, and so on. These classes should be based on interfaces defined within the application layer.
 
 - ### Web
-  The web application (Presentation layer). Depends on Application and Infrastructure (only for DependencyInjection) layers.
+
+  The web application (Presentation layer). Depends on Application and Infrastructure (only for DependencyInjection) layers. Divided into 2 layers
+
+  - **API**:
+    Implements endpoints with EF controllers to provide services from the application layer.
+
+  - **Client**:
+    Fetches data from the API & displays them in a Blazor WebAssembly app.
 
 ## Resources
 
