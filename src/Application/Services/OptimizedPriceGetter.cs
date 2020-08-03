@@ -15,9 +15,9 @@ namespace Arbetsprov.Application.Services
     public class OptimizedPriceGetter : IOptimizedPriceGetter
     {
         // TODO: Add some better (performance, readability) data structures?
+
         private List<OptimizedPricePeriod> Output;
         private List<PriceDetail> OpenSet;
-        // This could possibly be some sort of MaxHeap / PriorityQueue?
         private List<PriceDetail> ActiveCandidates;
 
         private DateTime LastDate;
@@ -81,7 +81,12 @@ namespace Arbetsprov.Application.Services
                         // If next price will still be valid after current has expired
                         // add to active candidates
                         if (next.ValidUntil > current.ValidUntil)
-                            ActiveCandidates.Add(next);
+                        {
+                            // Push to front so the list is sorted by latest date first 
+                            ActiveCandidates.Insert(0, next);
+                        }
+
+
                         OpenSet.RemoveAt(1);
                         continue;
                     }
@@ -92,7 +97,7 @@ namespace Arbetsprov.Application.Services
                         // If current item still is valid after next has expired,
                         // add to active candidates
                         if (next.ValidUntil < current.ValidUntil)
-                            ActiveCandidates.Add(current);
+                            ActiveCandidates.Insert(0, current);
                     }
                 }
                 // If we're at last price in list
@@ -104,10 +109,6 @@ namespace Arbetsprov.Application.Services
 
                     // Add all active candidates to the OpenSet
                     OpenSet.AddRange(ActiveCandidates);
-
-                    // Sort by latest date first
-                    // We do this because
-                    SortLatestDateFirst();
 
                     ActiveCandidates.Clear();
                     removeCurrent = false;
@@ -142,13 +143,6 @@ namespace Arbetsprov.Application.Services
             OpenSet.Sort((a, b) => a.ValidFrom == b.ValidFrom
                 ? a.UnitPrice.CompareTo(b.UnitPrice)
                 : a.ValidFrom.CompareTo(b.ValidFrom));
-        }
-
-        private void SortLatestDateFirst()
-        {
-            OpenSet.Sort((a, b) => a.ValidFrom == b.ValidFrom
-                ? a.UnitPrice.CompareTo(b.UnitPrice)
-                : b.ValidFrom.CompareTo(a.ValidFrom));
         }
     }
 }
